@@ -27,7 +27,7 @@ from selenium import webdriver
 
 # Chrome
 from selenium.webdriver.chrome.options import Options
-driverPath = r'C:\Users\James\OneDrive\PythonFiles\packages\selenium\WebDrivers\chromedriver.exe'
+driverPath = r'C:\WebDrivers\chromedriver.exe'
 chrome_options = Options()
 # chrome_options.add_argument("--headless")
 chrome_options.add_argument("--incognito")
