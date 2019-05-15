@@ -121,14 +121,23 @@ def get_current(s,matches):
             return(True)
 
 all_pops = {}
+s_hour = 24
+e_hour = 0
 for key,labels in all_labels.items():
     pops = []
     current = np.nan
     for i,label in enumerate(labels):
+        if re_hour.search(label)!= None:
+            hour = np.int(re_hour.search(label).group())
+            if hour < s_hour:
+                s_hour = hour
+            if hour > e_hour-1:
+                e_hour = hour+1
         # c = label.find('Currently')
         # if c != -1:
         if get_current(label,matches):
             current = i
+            print('hour:{}\tpercentage:{}'.format('now',re_percentage.search(label).group()))
         else:
             print('hour:{}\tpercentage:{}'.format(re_hour.search(label).group(),re_percentage.search(label).group()))
         pop = np.int(re_percentage.search(label).group()[:-1])
