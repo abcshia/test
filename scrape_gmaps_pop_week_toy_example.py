@@ -29,7 +29,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 driverPath = r'C:\WebDrivers\chromedriver.exe'
 chrome_options = Options()
-# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--incognito")
 # chrome_options.add_argument("--window-size=1920x1080")
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path = driverPath)
@@ -81,7 +81,6 @@ all_labels = {}
 for i in range(7):
     
     day_tab = driver.find_elements_by_xpath('//*[@id=":7"]')
-    # day_tab = driver.find_element_by_class_name('goog-inline-block goog-menu-button-caption')
     day_tab = day_tab[0]
     day = int(day_tab.get_attribute('aria-posinset'))
     
@@ -122,7 +121,6 @@ def get_current(s,matches):
 
 all_pops = {}
 s_hour = 24
-e_hour = 0
 for key,labels in all_labels.items():
     pops = []
     current = np.nan
@@ -130,11 +128,7 @@ for key,labels in all_labels.items():
         if re_hour.search(label)!= None:
             hour = np.int(re_hour.search(label).group())
             if hour < s_hour:
-                s_hour = hour
-            if hour > e_hour-1:
-                e_hour = hour+1
-        # c = label.find('Currently')
-        # if c != -1:
+                s_hour = hour           
         if get_current(label,matches):
             current = i
             print('hour:{}\tpercentage:{}'.format('now',re_percentage.search(label).group()))
@@ -149,7 +143,7 @@ for key,labels in all_labels.items():
 # plot weekly popularity
 plt.figure()
 for day,pops in all_pops.items():
-    plt.plot(np.arange(s_hour,e_hour),pops,label = num2dayofweek[day])
+    plt.plot(np.arange(s_hour,s_hour+len(pops)),pops,label = num2dayofweek[day])
 plt.ylim(0,100)
 plt.legend()
 plt.show()
@@ -157,30 +151,13 @@ plt.show()
 # bar plot of weekly popularity
 plt.figure()
 for day,pops in all_pops.items():
-    plt.bar(np.arange(s_hour,e_hour),pops,label = num2dayofweek[day],alpha=0.2)
+    plt.bar(np.arange(s_hour,s_hour+len(pops)),pops,label = num2dayofweek[day],alpha=0.2)
     if ~np.isnan(current):
         plt.bar(np.arange(s_hour,e_hour)[current],pops[current],color='magenta')
     # plt.plot(np.arange(s_hour,e_hour),pops)
 plt.ylim(0,100)
 plt.legend()
 plt.show()
-
-# bar subplots for the week, Method 1
-fig,axes = plt.subplots(4,2,sharex='all', sharey='all')
-for day,pops in all_pops.items():
-    r = (day-1)//2
-    c = (day-1)%2
-    ax = axes[r,c]
-    
-    ax.bar(np.arange(s_hour,e_hour),pops,label = '_no_legend_')
-    if ~np.isnan(current):
-        ax.bar(np.arange(s_hour,e_hour)[current],pops[current],color='magenta')
-    # ax.plot(np.arange(s_hour,e_hour),pops)
-    ax.set_title(num2dayofweek[day])
-    ax.set_ylim([0,100])
-    # ax.legend()
-plt.show()
-
 
 # bar subplots for the week, Method 2
 plt.figure()
@@ -190,9 +167,9 @@ for day,pops in all_pops.items():
     # ax = axes[r,c]
     index = 420 + day
     ax = plt.subplot(index)
-    ax.bar(np.arange(s_hour,e_hour),pops,label = '_no_legend_')
+    ax.bar(np.arange(s_hour,s_hour+len(pops)),pops,label = '_no_legend_')
     if ~np.isnan(current):
-        ax.bar(np.arange(s_hour,e_hour)[current],pops[current],color='magenta')
+        ax.bar(np.arange(s_hour,s_hour+len(pops))[current],pops[current],color='magenta')
     # ax.plot(np.arange(s_hour,e_hour),pops)
     ax.set_title(num2dayofweek[day])
     ax.set_ylim([0,100])
